@@ -5,21 +5,24 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.*;
+import java.util.UUID;
 
 @Entity
+@Table(name = "TB_ADDRESS")
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
-@Table(name = "TB_PERSON")
-public class Person {
+public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
-    @Column(nullable = false, length = 100)
-    private String name;
     @Column(nullable = false)
-    private String birthDate;
-    @OneToMany(mappedBy = "person")
-    private Set<Address> addresses;
+    private String address;
+    @Column(nullable = false, length = 9)
+    private String zipcode;
+    @Column(nullable = false)
+    private String city;
+    @ManyToOne
+    @JoinColumn(name = "person_id", nullable = false)
+    private Person person;
 }
