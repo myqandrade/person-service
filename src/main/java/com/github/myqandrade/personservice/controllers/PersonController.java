@@ -1,5 +1,6 @@
 package com.github.myqandrade.personservice.controllers;
 
+import com.github.myqandrade.personservice.model.Address;
 import com.github.myqandrade.personservice.model.Person;
 import com.github.myqandrade.personservice.repositories.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,5 +36,19 @@ public class PersonController {
     @PostMapping
     public ResponseEntity<Person> save(@RequestBody Person person){
         return ResponseEntity.status(HttpStatus.CREATED).body(personRepository.save(person));
+    }
+
+    @PutMapping("/edit/{id}")
+    public ResponseEntity<Person> update(@RequestBody Person updatedPerson, @PathVariable Integer id) {
+        Optional<Person> person = personRepository.findById(id);
+        List<Address> personAddresses = person.get().getAddresses();
+        for (Address address : personAddresses) {
+            if (address.getAddressId().equals(updatedPerson.getMainAddress().getAddressId())) {
+                updatedPerson.setMainAddress(address);
+                updatedPerson.setId(person.get().getId());
+                return ResponseEntity.ok().body(personRepository.save(updatedPerson));
+            }
+        }
+                return ResponseEntity.notFound().build();
     }
 }

@@ -21,6 +21,9 @@ public class Person {
     private String name;
     @Column(nullable = false)
     private String birthDate;
+    @OneToOne(targetEntity = Address.class, cascade = CascadeType.ALL)
+    @JoinColumn(name = "main_address_id", referencedColumnName = "addressId")
+    private Address mainAddress;
     @OneToMany(targetEntity = Address.class, cascade = CascadeType.ALL)
     @JoinColumn(name = "person_address_fk", referencedColumnName = "id")
     private List<Address> addresses;
