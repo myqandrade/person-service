@@ -27,4 +27,8 @@ public class Person {
     @OneToMany(targetEntity = Address.class, cascade = CascadeType.ALL)
     @JoinColumn(name = "person_address_fk", referencedColumnName = "id")
     private List<Address> addresses;
+
+    public void setAdress(Address address){
+        addresses.add(address);
+    }
 }

@@ -38,6 +38,19 @@ public class PersonController {
         return ResponseEntity.status(HttpStatus.CREATED).body(personRepository.save(person));
     }
 
+    @PostMapping("/newAddress/{id}")
+    public ResponseEntity saveAddress(@RequestBody Address address, @PathVariable Integer id){
+        Optional<Person> person = personRepository.findById(id);
+        List<Address> addresses = person.get().getAddresses();
+        for(Address ad : addresses){
+            if(ad.getAddress().equals(address.getAddress())){
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Address already exists");
+            }
+        }
+        person.get().setAdress(address);
+        return ResponseEntity.status(HttpStatus.OK).body(personRepository.save(person.get()));
+    }
+
     @PutMapping("/edit/{id}")
     public ResponseEntity<Person> update(@RequestBody Person updatedPerson, @PathVariable Integer id) {
         Optional<Person> person = personRepository.findById(id);
