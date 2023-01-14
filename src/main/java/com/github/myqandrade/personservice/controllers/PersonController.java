@@ -1,6 +1,7 @@
 package com.github.myqandrade.personservice.controllers;
 
 import com.github.myqandrade.personservice.model.Person;
+import com.github.myqandrade.personservice.repositories.AddressRepository;
 import com.github.myqandrade.personservice.repositories.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,9 @@ public class PersonController {
 
     @Autowired
     private PersonRepository personRepository;
+
+    @Autowired
+    private AddressRepository addressRepository;
 
     @GetMapping
     public ResponseEntity<List<Person>> findAll(){
