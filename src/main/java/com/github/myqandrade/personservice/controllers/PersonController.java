@@ -33,6 +33,12 @@ public class PersonController {
         return ResponseEntity.ok(person.get());
     }
 
+    @GetMapping("/addresses/{id}")
+    public ResponseEntity findPersonAddresses(@PathVariable Integer id){
+        Optional<Person> person = personRepository.findById(id);
+        return ResponseEntity.status(HttpStatus.OK).body(person.get().getAddresses());
+    }
+
     @PostMapping
     public ResponseEntity<Person> save(@RequestBody Person person){
         return ResponseEntity.status(HttpStatus.CREATED).body(personRepository.save(person));
