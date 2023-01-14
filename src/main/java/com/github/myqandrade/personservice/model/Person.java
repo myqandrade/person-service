@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.util.Set;
 
 @Entity
 @Data
@@ -26,7 +26,7 @@ public class Person {
     private Address mainAddress;
     @OneToMany(targetEntity = Address.class, cascade = CascadeType.ALL)
     @JoinColumn(name = "person_address_fk", referencedColumnName = "id")
-    private List<Address> addresses;
+    private Set<Address> addresses;
 
     public void setAdress(Address address){
         addresses.add(address);
