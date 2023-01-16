@@ -8,9 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class PersonService {
@@ -36,9 +34,25 @@ public class PersonService {
         return ResponseEntity.status(HttpStatus.OK).body(person.get().getAddresses());
     }
 
-    public ResponseEntity<Person> save(Person person){
-        Person savedPerson = personRepository.save(person);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedPerson);
+    public Person save(Person person){
+        Person savedPerson = null;
+        if((validateAddress(person))) {
+            savedPerson = personRepository.save(person);
+        }
+        return savedPerson;
+    }
+
+    public Boolean validateAddress(Person person){
+        List<Address> mainAddresses = new ArrayList<>();
+        for(Address ad : person.getAddresses()){
+            if(Objects.nonNull(ad.getIsMain()) && ad.getIsMain().equals(true)){
+                mainAddresses.add(ad);
+            }
+        }
+        if(mainAddresses.size() != 1){
+            return false;
+        }
+        return true;
     }
 
     public ResponseEntity saveAddress(Address address, Integer id){
@@ -53,19 +67,20 @@ public class PersonService {
         return ResponseEntity.status(HttpStatus.OK).body(personRepository.save(person.get()));
     }
 
-    public ResponseEntity<Person> saveMainAddress(Person updatedPerson,
-                                                  Integer personId, Integer addressId) {
-        Optional<Person> person = personRepository.findById(personId);
-        Set<Address> addresses = person.get().getAddresses();
-        for(Address address : addresses){
-            if(address.getAddressId() == addressId){
-                person.get().setMainAddress(address);
-                updatedPerson.setId(person.get().getId());
-                return ResponseEntity.ok().body(personRepository.save(updatedPerson));
-            }
-        }
-        return ResponseEntity.notFound().build();
-    }
+//    public ResponseEntity<Person> saveMainAddress(Person updatedPerson,
+//                                                  Integer personId, Integer addressId) {
+//        Optional<Person> person = personRepository.findById(personId);
+//        Set<Address> addresses = person.get().getAddresses();
+//        for(Address address : addresses){
+//            if(address.getAddressId() == addressId){
+//                person.get().setMainAddress(address);
+//                updatedPerson.setId(person.get().getId());
+//                System.out.println("Retorno: " + person.get().getId());
+//                return ResponseEntity.ok().body(personRepository.save(updatedPerson));
+//            }
+//        }
+//        return ResponseEntity.notFound().build();
+//    }
 
     public ResponseEntity<Person> updatePerson(Person updatedPerson, Integer id){
         Optional<Person> person = personRepository.findById(id);

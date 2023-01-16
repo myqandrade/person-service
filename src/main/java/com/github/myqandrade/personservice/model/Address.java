@@ -21,5 +21,7 @@ public class Address {
     private String zipcode;
     @Column(nullable = false)
     private String city;
+    @Column
+    private Boolean isMain;
 
 }
