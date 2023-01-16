@@ -36,13 +36,16 @@ public class PersonService {
 
     public Person save(Person person){
         Person savedPerson = null;
-        if((validateAddress(person))) {
+        if((validatePerson(person))) {
             savedPerson = personRepository.save(person);
         }
         return savedPerson;
     }
 
-    public Boolean validateAddress(Person person){
+    public Boolean validatePerson(Person person){
+        if(Objects.isNull(person)){
+            return false;
+        }
         List<Address> mainAddresses = new ArrayList<>();
         for(Address ad : person.getAddresses()){
             if(Objects.nonNull(ad.getIsMain()) && ad.getIsMain().equals(true)){
@@ -82,18 +85,17 @@ public class PersonService {
 //        return ResponseEntity.notFound().build();
 //    }
 
-    public ResponseEntity<Person> updatePerson(Person updatedPerson, Integer id){
+    public Person updatePerson(Person updatedPerson, Integer id){
         Optional<Person> person = personRepository.findById(id);
         Set<Address> addresses = person.get().getAddresses();
-        if(person.isPresent()){
-            for(Address ad : addresses){
-                updatedPerson.setAdress(ad);
-            }
-            updatedPerson.setId(person.get().getId());
-            return ResponseEntity.ok().body(personRepository.save(updatedPerson));
+        for (Address ad : addresses) {
+            updatedPerson.setAdress(ad);
         }
-
-        return ResponseEntity.notFound().build();
+        if (validatePerson(updatedPerson)) {
+            updatedPerson.setId(person.get().getId());
+            return personRepository.save(updatedPerson);
+        }
+        return null;
     }
 
     public ResponseEntity delete(Integer id){

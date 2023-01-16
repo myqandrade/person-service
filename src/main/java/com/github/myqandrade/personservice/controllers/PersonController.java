@@ -46,16 +46,12 @@ public class PersonController {
         return personService.saveAddress(address, id);
     }
 
-//    @PutMapping("/setMainAddress/{personId}/{addressId}")
-//    public ResponseEntity<Person> saveMainAddress(@RequestBody Person updatedPerson,
-//                                                  @PathVariable("personId") Integer personId,
-//                                                  @PathVariable("addressId") Integer addressId) {
-//        return personService.saveMainAddress(updatedPerson, personId, addressId);
-//    }
-
     @PutMapping("/editPerson/{id}")
-    public ResponseEntity<Person> updatePerson(@RequestBody Person updatedPerson, @PathVariable Integer id){
-        return personService.updatePerson(updatedPerson, id);
+    public ResponseEntity updatePerson(@RequestBody Person updatedPerson, @PathVariable Integer id){
+        if(Objects.isNull(personService.updatePerson(updatedPerson, id))){
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+        return ResponseEntity.ok(updatedPerson);
     }
 
     @DeleteMapping("/deletePerson/{id}")
