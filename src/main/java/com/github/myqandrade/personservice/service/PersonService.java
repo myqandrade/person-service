@@ -37,7 +37,8 @@ public class PersonService {
     }
 
     public ResponseEntity<Person> save(Person person){
-        return ResponseEntity.status(HttpStatus.CREATED).body(personRepository.save(person));
+        Person savedPerson = personRepository.save(person);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedPerson);
     }
 
     public ResponseEntity saveAddress(Address address, Integer id){
@@ -52,12 +53,13 @@ public class PersonService {
         return ResponseEntity.status(HttpStatus.OK).body(personRepository.save(person.get()));
     }
 
-    public ResponseEntity<Person> update(Person updatedPerson, Integer id) {
-        Optional<Person> person = personRepository.findById(id);
-        Set<Address> personAddresses = person.get().getAddresses();
-        for (Address address : personAddresses) {
-            if (address.getAddressId().equals(updatedPerson.getMainAddress().getAddressId())) {
-                updatedPerson.setMainAddress(address);
+    public ResponseEntity<Person> saveMainAddress(Person updatedPerson,
+                                                  Integer personId, Integer addressId) {
+        Optional<Person> person = personRepository.findById(personId);
+        Set<Address> addresses = person.get().getAddresses();
+        for(Address address : addresses){
+            if(address.getAddressId() == addressId){
+                person.get().setMainAddress(address);
                 updatedPerson.setId(person.get().getId());
                 return ResponseEntity.ok().body(personRepository.save(updatedPerson));
             }
@@ -76,6 +78,15 @@ public class PersonService {
             return ResponseEntity.ok().body(personRepository.save(updatedPerson));
         }
 
+        return ResponseEntity.notFound().build();
+    }
+
+    public ResponseEntity delete(Integer id){
+        Optional<Person> person = personRepository.findById(id);
+        if(person.isPresent()){
+            personRepository.delete(person.get());
+            return ResponseEntity.noContent().build();
+        }
         return ResponseEntity.notFound().build();
     }
 }

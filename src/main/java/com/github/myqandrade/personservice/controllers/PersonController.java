@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/persons")
+@RequestMapping("/api/persons")
 public class PersonController {
 
     @Autowired
@@ -41,13 +41,20 @@ public class PersonController {
         return personService.saveAddress(address, id);
     }
 
-    @PutMapping("/edit/{id}")
-    public ResponseEntity<Person> saveMainAddress(@RequestBody Person updatedPerson, @PathVariable Integer id) {
-        return personService.update(updatedPerson, id);
+    @PutMapping("/edit/{personId}/{addressId}")
+    public ResponseEntity<Person> saveMainAddress(@RequestBody Person updatedPerson,
+                                                  @PathVariable("personId") Integer personId,
+                                                  @PathVariable("addressId") Integer addressId) {
+        return personService.saveMainAddress(updatedPerson, personId, addressId);
     }
 
     @PutMapping("/editPerson/{id}")
     public ResponseEntity<Person> updatePerson(@RequestBody Person updatedPerson, @PathVariable Integer id){
         return personService.updatePerson(updatedPerson, id);
+    }
+
+    @DeleteMapping("/deletePerson/{id}")
+    public ResponseEntity delete(@PathVariable Integer id){
+        return personService.delete(id);
     }
 }
