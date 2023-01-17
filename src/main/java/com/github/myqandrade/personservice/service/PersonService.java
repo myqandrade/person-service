@@ -16,22 +16,33 @@ public class PersonService {
     @Autowired
     private PersonRepository personRepository;
 
-    public ResponseEntity<List<Person>> findAll(){
-        return ResponseEntity.status(HttpStatus.OK
-        ).body(personRepository.findAll());
-    }
-
-    public ResponseEntity<Person> findById(Integer id){
-        Optional<Person> person = personRepository.findById(id);
-        if(person.isEmpty()){
-            return ResponseEntity.notFound().build();
+    public List<Person> findAll(){
+        List<Person> validatedPerson = new ArrayList<>();
+        for(Person person : personRepository.findAll()){
+            if(validatePerson(person)) {
+                validatedPerson.add(person);
+            }
+            if(validatedPerson.isEmpty()){
+                return null;
+            }
         }
-        return ResponseEntity.ok(person.get());
+        return validatedPerson;
     }
 
-    public ResponseEntity findPersonAddresses(Integer id){
+    public Person findById(Integer id){
         Optional<Person> person = personRepository.findById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(person.get().getAddresses());
+        if(validatePerson(person.get())){
+            return person.get();
+        }
+        return null;
+    }
+
+    public Set<Address> findPersonAddresses(Integer id){
+        Optional<Person> person = personRepository.findById(id);
+        if(validatePerson(person.get())){
+            return person.get().getAddresses();
+        }
+        return null;
     }
 
     public Person save(Person person){
@@ -40,6 +51,40 @@ public class PersonService {
             savedPerson = personRepository.save(person);
         }
         return savedPerson;
+    }
+
+    public Person saveAddress(Address address, Integer id){
+        Optional<Person> person = personRepository.findById(id);
+        Set<Address> addresses = person.get().getAddresses();
+        if(validatePerson(person.get())) {
+            for (Address ad : addresses) {
+                if (ad.getAddress().equals(address.getAddress())) {
+                    return null;
+                }
+            }
+        }
+        person.get().setAdress(address);
+        return personRepository.save(person.get());
+    }
+
+    public Person updatePerson(Person updatedPerson, Integer id){
+        Optional<Person> person = personRepository.findById(id);
+        Set<Address> addresses = person.get().getAddresses();
+        for (Address ad : addresses) {
+            updatedPerson.setAdress(ad);
+        }
+        if (validatePerson(updatedPerson)) {
+            updatedPerson.setId(person.get().getId());
+            return personRepository.save(updatedPerson);
+        }
+        return null;
+    }
+
+    public void deletePerson(Integer id){
+        Optional<Person> person = personRepository.findById(id);
+        if(validatePerson(person.get())){
+            personRepository.delete(person.get());
+        }
     }
 
     public Boolean validatePerson(Person person){
@@ -56,54 +101,5 @@ public class PersonService {
             return false;
         }
         return true;
-    }
-
-    public ResponseEntity saveAddress(Address address, Integer id){
-        Optional<Person> person = personRepository.findById(id);
-        Set<Address> addresses = person.get().getAddresses();
-        for(Address ad : addresses){
-            if(ad.getAddress().equals(address.getAddress())){
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("Address already exists");
-            }
-        }
-        person.get().setAdress(address);
-        return ResponseEntity.status(HttpStatus.OK).body(personRepository.save(person.get()));
-    }
-
-//    public ResponseEntity<Person> saveMainAddress(Person updatedPerson,
-//                                                  Integer personId, Integer addressId) {
-//        Optional<Person> person = personRepository.findById(personId);
-//        Set<Address> addresses = person.get().getAddresses();
-//        for(Address address : addresses){
-//            if(address.getAddressId() == addressId){
-//                person.get().setMainAddress(address);
-//                updatedPerson.setId(person.get().getId());
-//                System.out.println("Retorno: " + person.get().getId());
-//                return ResponseEntity.ok().body(personRepository.save(updatedPerson));
-//            }
-//        }
-//        return ResponseEntity.notFound().build();
-//    }
-
-    public Person updatePerson(Person updatedPerson, Integer id){
-        Optional<Person> person = personRepository.findById(id);
-        Set<Address> addresses = person.get().getAddresses();
-        for (Address ad : addresses) {
-            updatedPerson.setAdress(ad);
-        }
-        if (validatePerson(updatedPerson)) {
-            updatedPerson.setId(person.get().getId());
-            return personRepository.save(updatedPerson);
-        }
-        return null;
-    }
-
-    public ResponseEntity delete(Integer id){
-        Optional<Person> person = personRepository.findById(id);
-        if(person.isPresent()){
-            personRepository.delete(person.get());
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
     }
 }

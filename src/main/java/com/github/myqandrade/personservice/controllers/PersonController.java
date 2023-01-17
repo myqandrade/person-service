@@ -20,17 +20,26 @@ public class PersonController {
 
     @GetMapping("/listPerson")
     public ResponseEntity<List<Person>> findAll(){
-        return personService.findAll();
+        if(Objects.isNull(personService.findAll())){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(personService.findAll());
     }
 
     @GetMapping("findPerson/{id}")
     public ResponseEntity<Person> findById(@PathVariable Integer id){
-        return personService.findById(id);
+        if(Objects.isNull(personService.findById(id))){
+            ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(personService.findById(id));
     }
 
     @GetMapping("/addresses/{id}")
     public ResponseEntity findPersonAddresses(@PathVariable Integer id){
-        return personService.findPersonAddresses(id);
+        if(Objects.isNull(personService.findPersonAddresses(id))){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(personService.findPersonAddresses(id));
     }
 
     @PostMapping("/savePerson")
@@ -43,7 +52,10 @@ public class PersonController {
 
     @PostMapping("/newAddress/{id}")
     public ResponseEntity saveAddress(@RequestBody Address address, @PathVariable Integer id){
-        return personService.saveAddress(address, id);
+        if(Objects.isNull(personService.saveAddress(address, id))){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(personService.saveAddress(address, id));
     }
 
     @PutMapping("/editPerson/{id}")
@@ -55,7 +67,7 @@ public class PersonController {
     }
 
     @DeleteMapping("/deletePerson/{id}")
-    public ResponseEntity delete(@PathVariable Integer id){
-        return personService.delete(id);
+    public void deletePerson(@PathVariable Integer id){
+        personService.deletePerson(id);
     }
 }
