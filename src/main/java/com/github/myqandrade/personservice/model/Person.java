@@ -1,10 +1,13 @@
 package com.github.myqandrade.personservice.model;
 
+import com.github.myqandrade.personservice.dto.AddressDto;
+import com.github.myqandrade.personservice.dto.PersonDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -23,9 +26,21 @@ public class Person {
     private String birthDate;
     @OneToMany(targetEntity = Address.class, cascade = CascadeType.ALL)
     @JoinColumn(name = "person_address_fk", referencedColumnName = "id")
-    private Set<Address> addresses;
+    private Set<Address> addresses = new HashSet<>();
 
     public void setAdress(Address address){
         addresses.add(address);
+    }
+
+    public static Person convert(PersonDto personDto){
+        Person person = new Person();
+        person.setName(personDto.getName());
+        person.setBirthDate(personDto.getBirthDate());
+        for(AddressDto addressDto : personDto.getAddresses()){
+            Address convertedAddress = Address.convert(addressDto);
+            person.setAdress(convertedAddress);
+        }
+
+        return person;
     }
 }

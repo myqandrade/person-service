@@ -1,14 +1,15 @@
 package com.github.myqandrade.personservice.service;
 
+import com.github.myqandrade.personservice.dto.AddressDto;
+import com.github.myqandrade.personservice.dto.PersonDto;
 import com.github.myqandrade.personservice.model.Address;
 import com.github.myqandrade.personservice.model.Person;
 import com.github.myqandrade.personservice.repositories.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class PersonService {
@@ -16,11 +17,12 @@ public class PersonService {
     @Autowired
     private PersonRepository personRepository;
 
-    public List<Person> findAll(){
-        List<Person> validatedPerson = new ArrayList<>();
+    public List<PersonDto> findAll(){
+        List<PersonDto> validatedPerson = new ArrayList<>();
         for(Person person : personRepository.findAll()){
-            if(validatePerson(person)) {
-                validatedPerson.add(person);
+            PersonDto personDto = PersonDto.convert(person);
+            if(validatePerson(personDto)) {
+                validatedPerson.add(personDto);
             }
             if(validatedPerson.isEmpty()){
                 return null;
@@ -29,70 +31,83 @@ public class PersonService {
         return validatedPerson;
     }
 
-    public Person findById(Integer id){
+    public PersonDto findById(Integer id){
         Optional<Person> person = personRepository.findById(id);
-        if(validatePerson(person.get())){
-            return person.get();
+        PersonDto convertedPersonDto = PersonDto.convert(person.get());
+        if(validatePerson(convertedPersonDto)){
+            return convertedPersonDto;
         }
         return null;
     }
 
-    public Set<Address> findPersonAddresses(Integer id){
+    public Set<AddressDto> findPersonAddresses(Integer id){
         Optional<Person> person = personRepository.findById(id);
-        if(validatePerson(person.get())){
-            return person.get().getAddresses();
+        PersonDto convertedPersonDto = PersonDto.convert(person.get());
+        if(validatePerson(convertedPersonDto)){
+            return convertedPersonDto.getAddresses();
         }
         return null;
     }
 
-    public Person save(Person person){
-        Person savedPerson = null;
-        if((validatePerson(person))) {
-            savedPerson = personRepository.save(person);
+    public PersonDto save(PersonDto personDto){
+        PersonDto savedPerson = null;
+        if((validatePerson(personDto))) {
+            Person person = Person.convert(personDto);
+            personRepository.save(person);
+            savedPerson = PersonDto.convert(person);
         }
         return savedPerson;
     }
 
-    public Person saveAddress(Address address, Integer id){
+    public AddressDto saveAddress(AddressDto addressDto, Integer id){
         Optional<Person> person = personRepository.findById(id);
-        Set<Address> addresses = person.get().getAddresses();
-        if(validatePerson(person.get())) {
-            for (Address ad : addresses) {
-                if (ad.getAddress().equals(address.getAddress())) {
+        PersonDto personDto = PersonDto.convert(person.get());
+        Set<AddressDto> addresses = personDto.getAddresses();
+        if(validatePerson(personDto)) {
+            for (AddressDto ad : addresses) {
+                if (ad.getAddress().equals(addressDto.getAddress())) {
                     return null;
                 }
             }
         }
-        person.get().setAdress(address);
-        return personRepository.save(person.get());
+        personDto.setAddress(addressDto);
+        Person updatedPerson = Person.convert(personDto);
+        personRepository.save(updatedPerson);
+
+        return addressDto;
     }
 
-    public Person updatePerson(Person updatedPerson, Integer id){
+    public PersonDto updatePerson(PersonDto updatedPersonDto, Integer id){
         Optional<Person> person = personRepository.findById(id);
         Set<Address> addresses = person.get().getAddresses();
         for (Address ad : addresses) {
-            updatedPerson.setAdress(ad);
+            AddressDto addressDto = AddressDto.convert(ad);
+            updatedPersonDto.setAddress(addressDto);
         }
-        if (validatePerson(updatedPerson)) {
-            updatedPerson.setId(person.get().getId());
-            return personRepository.save(updatedPerson);
+        if (validatePerson(updatedPersonDto)) {
+            Person convertedPerson = Person.convert(updatedPersonDto);
+            convertedPerson.setId(person.get().getId());
+            personRepository.save(convertedPerson);
+            return PersonDto.convert(convertedPerson);
         }
         return null;
     }
 
     public void deletePerson(Integer id){
         Optional<Person> person = personRepository.findById(id);
-        if(validatePerson(person.get())){
-            personRepository.delete(person.get());
+        PersonDto personDto = PersonDto.convert(person.get());
+        if(validatePerson(personDto)){
+            Person deletedPerson = Person.convert(personDto);
+            personRepository.delete(deletedPerson);
         }
     }
 
-    public Boolean validatePerson(Person person){
-        if(Objects.isNull(person)){
+    public Boolean validatePerson(PersonDto personDto){
+        if(Objects.isNull(personDto)){
             return false;
         }
-        List<Address> mainAddresses = new ArrayList<>();
-        for(Address ad : person.getAddresses()){
+        List<AddressDto> mainAddresses = new ArrayList<>();
+        for(AddressDto ad : personDto.getAddresses()){
             if(Objects.nonNull(ad.getIsMain()) && ad.getIsMain().equals(true)){
                 mainAddresses.add(ad);
             }
