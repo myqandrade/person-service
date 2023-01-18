@@ -84,6 +84,7 @@ public class PersonServiceTest {
     public void shouldBeUpdatedPerson() throws JsonProcessingException {
 
         AddressDto addressDto = new AddressDto();
+        addressDto.setAddressId(1);
         addressDto.setAddress("Rua Itamotinga 176");
         addressDto.setZipcode("21985-094");
         addressDto.setCity("Rio de Janeiro");
@@ -99,12 +100,12 @@ public class PersonServiceTest {
         personService.save(personDto);
 
         PersonDto personDto2 = new PersonDto();
-        personDto.setId(1);
-        personDto.setName("Mariana Marinho");
-        personDto.setBirthDate("14/01/2003");
+        personDto2.setId(1);
+        personDto2.setName("Mariana Marinho");
+        personDto2.setBirthDate("14/01/2003");
 
-        personService.updatePerson(personDto2);
+        personService.updatePerson(personDto2, 1);
 
-        Assertions.assertEquals("Mariana Marinho", personRepositoryMock.findById(1));
+        Assertions.assertEquals("Mariana Marinho", personRepositoryMock.findById(1).get().getName());
     }
 }

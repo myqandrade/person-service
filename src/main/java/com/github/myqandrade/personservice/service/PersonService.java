@@ -48,13 +48,13 @@ public class PersonService {
     }
 
     public PersonDto save(PersonDto personDto){
-        PersonDto savedPerson = null;
+        PersonDto p = null;
         if((validatePerson(personDto))) {
             Person person = Person.convert(personDto);
             personRepository.save(person);
-            savedPerson = PersonDto.convert(person);
+            p = PersonDto.convert(person);
         }
-        return savedPerson;
+        return p;
     }
 
     public AddressDto saveAddress(AddressDto addressDto, Integer id){
@@ -86,9 +86,9 @@ public class PersonService {
         if(validatePerson(updatedPersonDto)){
             updatedPersonDto.setId(p.get().getId());
             Person person = Person.convert(updatedPersonDto);
-            var savedPerson = personRepository.save(person);
+            personRepository.save(person);
 
-            return PersonDto.convert(savedPerson);
+            return PersonDto.convert(person);
         }
 
         return null;

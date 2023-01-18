@@ -67,6 +67,12 @@ public class PersonRepositoryMock implements PersonRepository {
 
     @Override
     public <S extends Person> S save(S entity) {
+        for(Person person : personList){
+            if(person.getId().equals(entity.getId())){
+                personList.remove(person);
+                break;
+            }
+        }
         personList.add(entity);
         return null;
     }
