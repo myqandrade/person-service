@@ -10,7 +10,7 @@ import java.util.Set;
 @Data
 public class PersonDto {
 
-
+    private Integer id;
     private String name;
     private String birthDate;
     private Set<AddressDto> addresses = new HashSet<>();
@@ -21,6 +21,7 @@ public class PersonDto {
 
     public static PersonDto convert(Person person){
         PersonDto personDto = new PersonDto();
+        personDto.setId(person.getId());
         personDto.setName(person.getName());
         personDto.setBirthDate(person.getBirthDate());
         for(Address address : person.getAddresses()){

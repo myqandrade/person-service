@@ -5,16 +5,14 @@ import com.github.myqandrade.personservice.dto.PersonDto;
 import com.github.myqandrade.personservice.model.Address;
 import com.github.myqandrade.personservice.model.Person;
 import com.github.myqandrade.personservice.repositories.PersonRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class PersonService {
-
-    @Autowired
     private PersonRepository personRepository;
 
     public List<PersonDto> findAll(){
@@ -78,18 +76,21 @@ public class PersonService {
     }
 
     public PersonDto updatePerson(PersonDto updatedPersonDto, Integer id){
-        Optional<Person> person = personRepository.findById(id);
-        Set<Address> addresses = person.get().getAddresses();
-        for (Address ad : addresses) {
-            AddressDto addressDto = AddressDto.convert(ad);
-            updatedPersonDto.setAddress(addressDto);
+        Optional<Person> p = personRepository.findById(id);
+        Set<Address> addresses = p.get().getAddresses();
+
+        for(Address ad : addresses){
+            updatedPersonDto.setAddress(AddressDto.convert(ad));
         }
-        if (validatePerson(updatedPersonDto)) {
-            Person convertedPerson = Person.convert(updatedPersonDto);
-            convertedPerson.setId(person.get().getId());
-            personRepository.save(convertedPerson);
-            return PersonDto.convert(convertedPerson);
+
+        if(validatePerson(updatedPersonDto)){
+            updatedPersonDto.setId(p.get().getId());
+            Person person = Person.convert(updatedPersonDto);
+            var savedPerson = personRepository.save(person);
+
+            return PersonDto.convert(savedPerson);
         }
+
         return null;
     }
 

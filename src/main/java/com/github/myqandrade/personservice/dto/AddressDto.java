@@ -5,6 +5,7 @@ import lombok.Data;
 @Data
 public class AddressDto {
 
+    private Integer addressId;
     private String address;
     private String zipcode;
     private String city;
@@ -12,6 +13,7 @@ public class AddressDto {
 
     public static AddressDto convert(Address address){
         AddressDto addressDto = new AddressDto();
+        addressDto.setAddressId(address.getAddressId());
         addressDto.setAddress(address.getAddress());
         addressDto.setZipcode(address.getZipcode());
         addressDto.setCity(address.getCity());

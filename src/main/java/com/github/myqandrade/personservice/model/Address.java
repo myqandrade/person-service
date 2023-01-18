@@ -1,10 +1,11 @@
 package com.github.myqandrade.personservice.model;
 
 import com.github.myqandrade.personservice.dto.AddressDto;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
 
 @Entity
 @Data
@@ -14,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class Address {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer addressId;
     @Column(nullable = false)
     private String address;
@@ -27,6 +28,7 @@ public class Address {
 
     public static Address convert(AddressDto addressDto){
         Address address = new Address();
+        address.setAddressId(addressDto.getAddressId());
         address.setAddress(addressDto.getAddress());
         address.setZipcode(addressDto.getZipcode());
         address.setCity(addressDto.getCity());

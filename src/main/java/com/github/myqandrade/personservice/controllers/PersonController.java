@@ -2,19 +2,16 @@ package com.github.myqandrade.personservice.controllers;
 
 import com.github.myqandrade.personservice.dto.AddressDto;
 import com.github.myqandrade.personservice.dto.PersonDto;
-import com.github.myqandrade.personservice.model.Address;
-import com.github.myqandrade.personservice.model.Person;
 import com.github.myqandrade.personservice.service.PersonService;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/person")

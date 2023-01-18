@@ -2,11 +2,11 @@ package com.github.myqandrade.personservice.model;
 
 import com.github.myqandrade.personservice.dto.AddressDto;
 import com.github.myqandrade.personservice.dto.PersonDto;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,7 +18,7 @@ import java.util.Set;
 public class Person {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column(nullable = false)
     private String name;
@@ -34,6 +34,7 @@ public class Person {
 
     public static Person convert(PersonDto personDto){
         Person person = new Person();
+        person.setId(personDto.getId());
         person.setName(personDto.getName());
         person.setBirthDate(personDto.getBirthDate());
         for(AddressDto addressDto : personDto.getAddresses()){
